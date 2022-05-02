@@ -1,43 +1,45 @@
-const {google} = require('googleapis');
+const { getGSheet, getData, getTitle, appendGSheet } = require('./gsheet');
+const HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": 2592000, // 30 days
+};
 
-async function getSheetsClient() {
-  const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    keyFile: 'serviceCredentials.json',
-  });
-  const client = await auth.getClient();
-  return google.sheets({version: 'v4', auth: client});
+function handleCors(req, res) {
+  if (req.method === "OPTIONS") {
+    res.writeHead(204, HEADERS);
+    res.end();
+    console.log("Returning 204");
+  }
+}
+
+function handleResponse(res, data, statusCode) {
+  res.writeHead(statusCode, HEADERS);
+  res.end(JSON.stringify(data));
 }
 
 exports.main = async (req, res) => {
-  console.log("Entered Function");
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Max-Age": 2592000, // 30 days
-  };
-  if (req.method === "OPTIONS") {
-    res.writeHead(204, headers);
-    res.end();
-    console.log("Returning 204");
-    return;
+  handleCors(req, res);
+
+  if (req.method === "POST") {
+    await _post(req, res);
+  } else if (req.method === "GET") {
+    await _get(req, res);
   }
-  console.log("Writing response");
-  res.writeHead(200, headers);
-  res.end(JSON.stringify({status: 200, message: "Successfully updated spreadsheet"}));
 };
 
-async function write_row_to_gsheet(row, gsheet_id) {
-  const sheets = await getSheetsClient();
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: gsheet_id,
-    range: 'Sheet1!A:B',
-    valueInputOption: 'USER_ENTERED',
-    resource: {
-      values: [
-        row
-      ]
-    }
-  })
+async function _get(req, res) {
+  let gSheetId = req.query["gsheetid"];
+  let gSheet = await getGSheet(gSheetId);
+  let data = await getData(gSheet);
+  handleResponse(res, data, 200);
+}
+
+async function _post(req, res) {
+  let gSheetId = req.body["gsheetid"];
+  let data = req.body["data"];
+  let sheetName = req.body["sheetname"];
+  let response = await appendGSheet(gSheetId, data, sheetName);
+  handleResponse(res, response, 200);
 }
