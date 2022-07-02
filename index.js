@@ -2,7 +2,7 @@ const { getGSheet, getData, getTitle, appendGSheet } = require('./gsheet');
 const HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": 2592000, // 30 days
 };
 
