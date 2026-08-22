@@ -1,9 +1,12 @@
 import { ApiError } from '../src/errors.js';
-import type { SheetsBackend, TabMeta } from '../src/sheets-client.js';
+import type { SheetsBackend, SpreadsheetMeta } from '../src/sheets-client.js';
 
 /** In-memory SheetsBackend: sheetId → tab name → grid (header row first). */
 export class FakeBackend implements SheetsBackend {
-  constructor(private store: Map<string, Map<string, string[][]>>) {}
+  constructor(
+    private store: Map<string, Map<string, string[][]>>,
+    private title = 'Fake spreadsheet',
+  ) {}
 
   static withSheet(sheetId: string, tabs: Record<string, string[][]>): FakeBackend {
     return new FakeBackend(new Map([[sheetId, new Map(Object.entries(tabs))]]));
@@ -21,12 +24,15 @@ export class FakeBackend implements SheetsBackend {
     return grid;
   }
 
-  async getTabs(sheetId: string): Promise<TabMeta[]> {
-    return [...this.sheet(sheetId).entries()].map(([title, grid]) => ({
-      title,
-      rowCount: grid.length,
-      columnCount: grid[0]?.length ?? 0,
-    }));
+  async getMeta(sheetId: string): Promise<SpreadsheetMeta> {
+    return {
+      title: this.title,
+      tabs: [...this.sheet(sheetId).entries()].map(([title, grid]) => ({
+        title,
+        rowCount: grid.length,
+        columnCount: grid[0]?.length ?? 0,
+      })),
+    };
   }
 
   async getValues(sheetId: string, tab: string): Promise<string[][]> {

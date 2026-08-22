@@ -80,6 +80,7 @@ describe('GET /v1/sheets/:slug', () => {
       { title: 'Sheet1', rowCount: 3, columnCount: 2 },
       { title: 'Sheet2', rowCount: 2, columnCount: 2 },
     ]);
+    expect(body.spreadsheetTitle).toBe('Fake spreadsheet');
     expect(JSON.stringify(body)).not.toContain(SHEET_ID);
   });
 

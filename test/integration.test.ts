@@ -12,7 +12,7 @@ describe.skipIf(!SHEET_ID)('Google Sheets integration', () => {
   it('appends, reads, updates, and deletes a row', async () => {
     const backend = new GoogleSheetsBackend();
     const sheetId = SHEET_ID!;
-    const [tab] = await backend.getTabs(sheetId);
+    const [tab] = (await backend.getMeta(sheetId)).tabs;
     expect(tab).toBeDefined();
     const tabName = tab!.title;
     const marker = `it-${process.pid}`;

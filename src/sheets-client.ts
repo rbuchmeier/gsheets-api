@@ -14,8 +14,14 @@ export interface TabMeta {
  *
  * All row values are the raw cell grid (arrays of strings), header included.
  */
+export interface SpreadsheetMeta {
+  /** The spreadsheet's actual document title in Google Drive. */
+  title: string;
+  tabs: TabMeta[];
+}
+
 export interface SheetsBackend {
-  getTabs(sheetId: string): Promise<TabMeta[]>;
+  getMeta(sheetId: string): Promise<SpreadsheetMeta>;
   /** Full value grid of one tab, header row first. */
   getValues(sheetId: string, tab: string): Promise<string[][]>;
   /** Append rows (raw cell arrays) after the last data row of the tab. */
@@ -86,13 +92,16 @@ export class GoogleSheetsBackend implements SheetsBackend {
     }
   }
 
-  async getTabs(sheetId: string): Promise<TabMeta[]> {
+  async getMeta(sheetId: string): Promise<SpreadsheetMeta> {
     const meta = await this.wrap(() => this.client.spreadsheets.get({ spreadsheetId: sheetId }));
-    return (meta.data.sheets ?? []).map((s) => ({
-      title: s.properties?.title ?? '',
-      rowCount: s.properties?.gridProperties?.rowCount ?? 0,
-      columnCount: s.properties?.gridProperties?.columnCount ?? 0,
-    }));
+    return {
+      title: meta.data.properties?.title ?? '',
+      tabs: (meta.data.sheets ?? []).map((s) => ({
+        title: s.properties?.title ?? '',
+        rowCount: s.properties?.gridProperties?.rowCount ?? 0,
+        columnCount: s.properties?.gridProperties?.columnCount ?? 0,
+      })),
+    };
   }
 
   async getValues(sheetId: string, tab: string): Promise<string[][]> {

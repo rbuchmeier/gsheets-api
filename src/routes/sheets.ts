@@ -25,7 +25,7 @@ async function resolveTab(
   reg: SheetRegistration,
   tabParam: string | undefined,
 ): Promise<string> {
-  const tabs = await backend.getTabs(reg.sheetId);
+  const { tabs } = await backend.getMeta(reg.sheetId);
   if (tabParam === undefined) {
     const first = tabs[0];
     if (!first) throw new ApiError('not_found', 'Spreadsheet has no tabs');
@@ -82,8 +82,14 @@ export function sheetRoutes({ registry, backend }: SheetRoutesDeps) {
   app.get('/:slug', async (c) => {
     const reg = registry.resolve(c.req.param('slug'));
     registry.assertOp(reg, 'read');
-    const tabs = await backend.getTabs(reg.sheetId);
-    return c.json({ slug: reg.slug, title: reg.title, ops: reg.ops, tabs });
+    const meta = await backend.getMeta(reg.sheetId);
+    return c.json({
+      slug: reg.slug,
+      title: reg.title,
+      spreadsheetTitle: meta.title,
+      ops: reg.ops,
+      tabs: meta.tabs,
+    });
   });
 
   app.get('/:slug/rows', async (c) => {
