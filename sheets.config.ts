@@ -9,9 +9,9 @@ import type { SheetRegistration } from './src/registry.js';
  */
 export const sheets: SheetRegistration[] = [
   {
-    slug: 'example',
-    sheetId: 'REPLACE_WITH_A_REAL_GOOGLE_SHEET_ID',
-    title: 'Example sheet',
+    slug: 'main',
+    sheetId: '1-8Y6CCOKOoX97iCkvpOuAL44DdTp6LqndlPYBgdsbZ0',
+    title: 'Main sheet',
     ops: ['read', 'append', 'update', 'delete'],
   },
 ];

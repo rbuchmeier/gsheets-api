@@ -16,7 +16,8 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "apikey": "gcloud secrets versions access latest --secret=gsheets-api-keys --project=\"${GCP_PROJECT_ID:-general-usage-348604}\""
   },
   "author": "Ryan Buchmeier",
   "license": "MIT",
