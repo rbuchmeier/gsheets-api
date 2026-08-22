@@ -34,7 +34,7 @@ route accepts `?tab=<name>`; it defaults to the first tab. Raw Google sheet IDs
 never appear in URLs or responses — slugs are the public names.
 
 ```
-GET    /healthz                          liveness (no auth)
+GET    /health                           liveness (no auth)
 GET    /v1/sheets                        registered sheets
 GET    /v1/sheets/{slug}                 tab metadata
 GET    /v1/sheets/{slug}/rows            list rows

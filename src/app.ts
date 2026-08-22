@@ -18,7 +18,8 @@ export function buildApp({ registry, backend, apiKeys }: AppDeps) {
   app.onError((err, c) => errorResponse(c, err));
   app.use('*', cors({ origin: '*', allowHeaders: ['Content-Type', 'Authorization'] }));
 
-  app.get('/healthz', (c) => c.json({ ok: true }));
+  // Not /healthz: Google's frontend intercepts that path on run.app domains.
+  app.get('/health', (c) => c.json({ ok: true }));
 
   app.use('/v1/*', apiKeyAuth(apiKeys));
   app.route('/v1/sheets', sheetRoutes({ registry, backend }));

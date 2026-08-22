@@ -40,8 +40,8 @@ beforeEach(() => {
 });
 
 describe('auth', () => {
-  it('healthz is open', async () => {
-    expect((await app.request('/healthz')).status).toBe(200);
+  it('health is open', async () => {
+    expect((await app.request('/health')).status).toBe(200);
   });
 
   it.each([
